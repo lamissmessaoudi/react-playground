@@ -7,9 +7,9 @@ class App extends Component {
   state = {
     //etat de component
     persons: [
-      { id: "lms", name: "lamiss", age: 21 }, //chacun doit avoir a unique id
-      { id: "mlk", name: "Maleek", age: 19 },
-      { id: "mnr", name: "Manar", age: 16 }
+      { id: "lms", name: "lamiss", age: 21, postionA: true }, //chacun doit avoir a unique id
+      { id: "mlk", name: "Maleek", age: 19, postionA: true },
+      { id: "mnr", name: "Manar", age: 16, postionA: true }
     ],
     showPersons: true
   };
@@ -50,28 +50,66 @@ class App extends Component {
     this.setState({ showPersons: !this.state.showPersons });
   };
 
+  movePersonsHandeler = person => {
+    const newPersons = [...this.state.persons];
+    const index = newPersons.indexOf(person);
+    newPersons[index].postionA = !newPersons[index].postionA;
+
+    this.setState({
+      persons: newPersons
+    });
+  };
+
   render() {
     //ce code va executer chaque fois of fait appel à render
     //return jsx
-    let personsComponents = null;
+    let personsComponentsA = null;
+    let personsComponentsB = null;
     if (this.state.showPersons)
-      personsComponents = (
+      personsComponentsA = (
         <div>
           {this.state.persons.map(person => {
-            //map permet de parcourir toute la liste
-            return (
-              <Person //tag jsx
-                name={person.name} //properties
-                age={person.age}
-                key={person.id}
-                deleted={() => {
-                  this.deletePerson(person);
-                }}
-                changed={event => {
-                  this.changeNameHandler(event, person); //on ajoute ici les () car on veut excuter la methode ici
-                }}
-              />
-            );
+            if (person.postionA == true)
+              return (
+                <Person //tag jsx
+                  name={person.name} //properties
+                  age={person.age}
+                  key={person.id}
+                  deleted={() => {
+                    this.deletePerson(person);
+                  }}
+                  changed={event => {
+                    this.changeNameHandler(event, person); //on ajoute ici les () car on veut excuter la methode ici
+                  }}
+                  moved={() => {
+                    this.movePersonsHandeler(person);
+                  }}
+                />
+              );
+          })}
+        </div>
+      );
+    if (this.state.showPersons)
+      personsComponentsB = (
+        <div>
+          {this.state.persons.map(person => {
+            if (person.postionA == false)
+              return (
+                <Person //tag jsx
+                  name={person.name} //properties
+                  age={person.age}
+                  key={person.id}
+                  deleted={() => {
+                    this.deletePerson(person);
+                  }}
+                  changed={event => {
+                    this.changeNameHandler(event, person); //on ajoute ici les () car on veut excuter la methode ici
+                  }}
+                  moved={() => {
+                    this.movePersonsHandeler(person);
+                  }}
+                />
+              );
           })}
         </div>
       );
@@ -81,12 +119,21 @@ class App extends Component {
         <h1>Hello React App !!!</h1>
         <button onClick={this.switchNameHandler}>Switch Name </button>
         <button onClick={this.showPersonsHandeler}>Toggle </button>
-        {personsComponents}
+        <br />
+
+        <div className="A">
+          <h2>"List A"</h2>
+          {personsComponentsA}
+        </div>
+        <div className="B">
+          <h2>"List B"</h2>
+          {personsComponentsB}
+        </div>
       </div>
     );
   }
-}
 
+}
 export default App;
 // <Person> doesn't have a css class
 //les name et age props should be string in "" no numbers in this case <Person name="Manar" age="16" />
